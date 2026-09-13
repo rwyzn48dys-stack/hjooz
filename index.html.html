@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حجوز</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF6EE;
+    --card:#FFFFFF;
+    --ink:#2A231C;
+    --ink-soft:#6B6055;
+    --line:#E7DBC3;
+    --brand:#B5541E;   /* صيف / شاليهات - طيني محروق */
+    --brand-dark:#8F4217;
+    --green:#45624A;   /* استراحات / ملاعب */
+    --green-dark:#354C3A;
+    --gold:#C98A2C;    /* أسعار / مخيمات */
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Tajawal',sans-serif;
+    line-height:1.6;
+  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+
+  header.top{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 28px;
+    border-bottom:1px solid var(--line);
+    background:var(--bg);
+    position:sticky;top:0;z-index:10;
+  }
+  .logo{
+    font-weight:900;font-size:26px;color:var(--brand);
+    display:flex;align-items:center;gap:8px;
+  }
+  .logo svg{width:30px;height:30px;}
+  nav.top-nav{display:flex;gap:6px;}
+  nav.top-nav button{
+    padding:9px 18px;border-radius:999px;font-weight:700;font-size:14.5px;
+    background:transparent;color:var(--ink-soft);
+  }
+  nav.top-nav button.active{background:var(--ink);color:#fff;}
+
+  main{max-width:1100px;margin:0 auto;padding:28px 20px 80px;}
+
+  /* HERO */
+  .hero{
+    background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);
+    border-radius:22px;padding:38px 32px;color:#fff;margin-bottom:28px;
+    display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;
+  }
+  .hero h1{font-size:30px;margin:0 0 8px;font-weight:900;}
+  .hero p{margin:0;opacity:.9;font-size:15px;max-width:440px;}
+  .hero-badge{
+    background:rgba(255,255,255,.15);border-radius:14px;padding:14px 20px;
+    font-size:14px;font-weight:700;backdrop-filter:blur(2px);
+  }
+
+  /* CATEGORY CHIPS */
+  .cats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px;}
+  .cat-chip{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 18px;border-radius:999px;border:1.5px solid var(--line);
+    background:var(--card);font-weight:700;font-size:14.5px;color:var(--ink-soft);
+    transition:.15s;
+  }
+  .cat-chip svg{width:18px;height:18px;}
+  .cat-chip.active{border-color:transparent;background:var(--ink);color:#fff;}
+
+  /* GRID */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px;}
+  .card{
+    background:var(--card);border-radius:var(--radius);overflow:hidden;
+    border:1px solid var(--line);display:flex;flex-direction:column;
+    transition:.15s;
+  }
+  .card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(42,35,28,.08);}
+  .card .thumb{
+    height:140px;display:flex;align-items:center;justify-content:center;
+  }
+  .card .thumb svg{width:64px;height:64px;}
+  .card .body{padding:16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+  .card .name{font-weight:800;font-size:16.5px;}
+  .card .loc{font-size:13px;color:var(--ink-soft);}
+  .card .row-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:10px;}
+  .price{font-weight:900;color:var(--brand-dark);font-size:15px;}
+  .price span{font-weight:500;color:var(--ink-soft);font-size:12.5px;}
+  .tag{
+    font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;
+    background:#EFE7D6;color:var(--green-dark);
+  }
+  .btn{
+    padding:9px 16px;border-radius:10px;font-weight:700;font-size:14px;
+  }
+  .btn-primary{background:var(--brand);color:#fff;}
+  .btn-primary:hover{background:var(--brand-dark);}
+  .btn-outline{background:transparent;border:1.5px solid var(--line);color:var(--ink);}
+  .btn-green{background:var(--green);color:#fff;}
+  .btn-green:hover{background:var(--green-dark);}
+  .btn-block{width:100%;}
+  .btn-sm{padding:6px 12px;font-size:12.5px;border-radius:8px;}
+
+  .empty{
+    text-align:center;padding:60px 20px;color:var(--ink-soft);
+  }
+
+  /* DETAIL */
+  .back-link{display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;font-weight:700;color:var(--ink-soft);}
+  .detail-top{display:grid;grid-template-columns:1.2fr 1fr;gap:26px;}
+  @media(max-width:820px){.detail-top{grid-template-columns:1fr;}}
+  .detail-hero{
+    border-radius:20px;height:260px;display:flex;align-items:center;justify-content:center;
+  }
+  .detail-hero svg{width:110px;height:110px;}
+  .detail-info h2{font-size:26px;margin:0 0 4px;font-weight:900;}
+  .detail-info .loc{color:var(--ink-soft);margin-bottom:14px;}
+  .detail-info p.desc{color:var(--ink-soft);font-size:14.5px;margin-bottom:20px;}
+  .panel{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;
+  }
+
+  /* CALENDAR */
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .cal-head button{background:var(--bg);border-radius:8px;padding:6px 10px;font-weight:700;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;}
+  .cal-grid .dow{font-size:12px;color:var(--ink-soft);font-weight:700;padding-bottom:4px;}
+  .cal-day{
+    padding:9px 0;border-radius:8px;font-size:13.5px;font-weight:600;
+    background:var(--bg);cursor:pointer;
+  }
+  .cal-day.disabled{opacity:.3;cursor:not-allowed;}
+  .cal-day.selected{background:var(--brand);color:#fff;}
+  .cal-day.in-range{background:#F1D9C6;}
+  .cal-day.empty-cell{background:transparent;cursor:default;}
+
+  .summary-row{display:flex;justify-content:space-between;font-size:14px;margin:6px 0;color:var(--ink-soft);}
+  .summary-row.total{color:var(--ink);font-weight:800;font-size:16px;border-top:1px dashed var(--line);padding-top:10px;margin-top:10px;}
+
+  /* FORMS */
+  label{display:block;font-size:13.5px;font-weight:700;margin:12px 0 6px;}
+  input,select,textarea{
+    width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);
+    font-family:inherit;font-size:14px;background:var(--bg);color:var(--ink);
+  }
+  textarea{resize:vertical;min-height:70px;}
+
+  .step-note{
+    background:#F3EEE0;border:1px dashed var(--line);border-radius:12px;padding:12px 14px;
+    font-size:13px;color:var(--ink-soft);margin-top:14px;
+  }
+
+  /* ADMIN */
+  .admin-tabs{display:flex;gap:8px;margin-bottom:20px;}
+  .admin-tabs button{padding:9px 16px;border-radius:10px;font-weight:700;background:var(--card);border:1px solid var(--line);color:var(--ink-soft);}
+  .admin-tabs button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+  .stat-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;}
+  .stat-card .num{font-size:24px;font-weight:900;color:var(--brand-dark);}
+  .stat-card .lbl{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{padding:10px 8px;text-align:right;border-bottom:1px solid var(--line);}
+  th{color:var(--ink-soft);font-weight:700;font-size:12.5px;}
+  .row-actions{display:flex;gap:6px;}
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--ink);color:#fff;padding:12px 22px;border-radius:12px;
+    font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:50;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,-6px);}
+  .loading{text-align:center;padding:40px;color:var(--ink-soft);}
+
+  .whatsapp-fab{
+    position:fixed;bottom:24px;left:24px;z-index:40;
+    display:flex;align-items:center;gap:9px;
+    background:#25D366;color:#fff;
+    padding:12px 18px;border-radius:999px;
+    font-weight:700;font-size:14px;
+    box-shadow:0 6px 18px rgba(37,211,102,.35);
+    transition:.15s;
+  }
+  .whatsapp-fab:hover{background:#1EBE5A;transform:translateY(-2px);}
+  .whatsapp-fab svg{width:22px;height:22px;flex-shrink:0;}
+  @media(max-width:480px){
+    .whatsapp-fab span{display:none;}
+    .whatsapp-fab{padding:13px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M3 11L12 4l9 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    حجوز
+  </div>
+  <nav class="top-nav">
+    <button data-view="home" class="active">الرئيسية</button>
+    <button data-view="admin">لوحة التحكم</button>
+  </nav>
+</header>
+
+<main id="app">
+  <div class="loading">...جاري التحميل</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<a class="whatsapp-fab" href="https://wa.me/966554955427" target="_blank" rel="noopener">
+  <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.01 3C9.38 3 4 8.38 4 15.01c0 2.35.65 4.55 1.78 6.43L4 29l7.75-1.73a11.9 11.9 0 0 0 4.26.78c6.63 0 12.01-5.38 12.01-12.01C28.02 8.38 22.64 3 16.01 3Zm0 21.86c-1.37 0-2.71-.33-3.9-.96l-.28-.15-4.6 1.03 1.05-4.48-.18-.29a9.75 9.75 0 0 1-1.5-5.2c0-5.4 4.4-9.8 9.81-9.8 2.62 0 5.08 1.02 6.94 2.87a9.74 9.74 0 0 1 2.87 6.93c0 5.4-4.4 9.79-9.81 9.79Zm5.4-7.34c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.66.15-.2.3-.76.96-.93 1.16-.17.2-.34.22-.64.07-.3-.15-1.25-.46-2.38-1.46-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.61.14-.14.3-.34.45-.51.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.66-1.59-.9-2.17-.24-.57-.48-.5-.66-.5-.17 0-.37-.02-.56-.02-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.47 0 1.46 1.06 2.87 1.21 3.07.15.2 2.09 3.2 5.07 4.48.71.3 1.26.49 1.69.62.71.22 1.35.19 1.86.12.57-.09 1.75-.71 2-1.4.25-.68.25-1.27.17-1.4-.07-.12-.27-.2-.56-.34Z"/></svg>
+  <span>تواصل معنا واتساب</span>
+</a>
+
+<script>
+/* ---------------- helpers ---------------- */
+const $ = (sel,el=document)=>el.querySelector(sel);
+const $$ = (sel,el=document)=>[...el.querySelectorAll(sel)];
+const money = n => (Math.round(n*100)/100).toLocaleString('ar-SA') + ' ر.س';
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+const ADMIN_PASSWORD = 'Hjooz@2026!'; // غيّرها لكلمة مرور خاصة بك
+let adminUnlocked = false;
+
+const CATEGORIES = {
+  chalet: {name:'شاليهات', color:'var(--brand)', bg:'#F1E3D6'},
+  rest:   {name:'استراحات', color:'var(--green)', bg:'#E4EAE2'},
+  field:  {name:'ملاعب كرة قدم', color:'var(--green-dark)', bg:'#DCE7DA'},
+  camp:   {name:'مخيمات', color:'var(--gold)', bg:'#F3E7CE'}
+};
+
+function icon(cat, size=64){
+  const c = CATEGORIES[cat]?.color || 'var(--brand)';
+  const icons = {
+    chalet: `<svg viewBox="0 0 64 64" width="${size}" height="${size}"><circle cx="46" cy="18" r="9" fill="${c}" opacity=".85"/><path d="M6 46l16-20 10 12 8-9 18 17z" fill="${c}"/><rect x="4" y="46" width="56" height="4" rx="2" fill="${c}" opacity=".4"/></svg>`,
+    rest: `<svg viewBox="0 0 64 64" width="${size}" height="${size}"><rect x="8" y="30" width="48" height="16" rx="6" fill="${c}"/><rect x="12" y="20" width="14" height="14" rx="4" fill="${c}" opacity=".6"/><rect x="38" y="20" width="14" height="14" rx="4" fill="${c}" opacity=".6"/><rect x="6" y="46" width="8" height="10" rx="2" fill="${c}" opacity=".85"/><rect x="50" y="46" width="8" height="10" rx="2" fill="${c}" opacity=".85"/></svg>`,
+    field: `<svg viewBox="0 0 64 64" width="${size}" height="${size}"><rect x="6" y="10" width="52" height="44" rx="4" fill="none" stroke="${c}" stroke-width="3"/><line x1="32" y1="10" x2="32" y2="54" stroke="${c}" stroke-width="3"/><circle cx="32" cy="32" r="7" fill="none" stroke="${c}" stroke-width="3"/><rect x="6" y="24" width="8" height="16" fill="none" stroke="${c}" stroke-width="3"/><rect x="50" y="24" width="8" height="16" fill="none" stroke="${c}" stroke-width="3"/></svg>`,
+    camp: `<svg viewBox="0 0 64 64" width="${size}" height="${size}"><path d="M32 12L54 50H10z" fill="${c}"/><path d="M32 12L40 50h-16z" fill="#fff" opacity=".25"/><rect x="4" y="50" width="56" height="4" rx="2" fill="${c}" opacity=".4"/></svg>`
+  };
+  return icons[cat] || icons.chalet;
+}
+
+/* ---------------- state ---------------- */
+let listings = [];
+let bookings = [];
+let state = { view:'home', activeCat:'all', currentListingId:null, calMonth:null, selStart:null, selEnd:null, adminTab:'listings' };
+
+/* ---------------- Supabase ---------------- */
+const SUPABASE_URL = 'https://obxgeuftpekilvdhohzk.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_kw2tAEOaFKOCGorvSMpU0A_Yt-eMpSP';
+
+function sbHeaders(){
+  return {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json'
+  };
+}
+async function sbSelect(table, query=''){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*${query}`, {headers: sbHeaders()});
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+async function sbInsert(table, row){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method:'POST', headers:{...sbHeaders(),'Prefer':'return=representation'}, body: JSON.stringify(row)
+  });
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+async function sbUpdate(table, id, row){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method:'PATCH', headers:{...sbHeaders(),'Prefer':'return=representation'}, body: JSON.stringify(row)
+  });
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+async function sbDelete(table, id){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {method:'DELETE', headers: sbHeaders()});
+  if(!res.ok) throw new Error(await res.text());
+}
+
+/* تحويل بين تسمية أعمدة قاعدة البيانات (snake_case) وتسمية الكود (camelCase) */
+function fromDbListing(r){
+  return {id:r.id, name:r.name, category:r.category, location:r.location, price:Number(r.price),
+    commissionType:r.commission_type, commissionValue:Number(r.commission_value), desc:r.desc||''};
+}
+function toDbListing(l){
+  return {id:l.id, name:l.name, category:l.category, location:l.location, price:l.price,
+    commission_type:l.commissionType, commission_value:l.commissionValue, desc:l.desc||''};
+}
+function fromDbBooking(r){
+  return {id:r.id, listingId:r.listing_id, guestName:r.guest_name, guestPhone:r.guest_phone,
+    checkIn:r.check_in, checkOut:r.check_out, nights:r.nights, total:Number(r.total),
+    commission:Number(r.commission), ownerAmount:Number(r.owner_amount)};
+}
+function toDbBooking(b){
+  return {id:b.id, listing_id:b.listingId, guest_name:b.guestName, guest_phone:b.guestPhone,
+    check_in:b.checkIn, check_out:b.checkOut, nights:b.nights, total:b.total,
+    commission:b.commission, owner_amount:b.ownerAmount};
+}
+
+async function loadData(){
+  try{
+    const rows = await sbSelect('listings','&order=created_at.asc');
+    listings = rows.map(fromDbListing);
+    if(!listings.length){
+      const seeds = seedListings();
+      for(const s of seeds){ await sbInsert('listings', toDbListing(s)); }
+      listings = seeds;
+    }
+  }catch(e){
+    listings = seedListings();
+    toast('تعذر الاتصال بقاعدة البيانات، يعرض بيانات تجريبية مؤقتة');
+  }
+  try{
+    const rows = await sbSelect('bookings','&order=created_at.desc');
+    bookings = rows.map(fromDbBooking);
+  }catch(e){ bookings = []; }
+}
+
+function seedListings(){
+  return [
+    {id:'d1', name:'شاليه الواحة', category:'chalet', location:'الخبر - الكورنيش', price:450, commissionType:'percent', commissionValue:10, desc:'شاليه بمسبح خاص وإطلالة على البحر، يتسع لـ 8 أشخاص.'},
+    {id:'d2', name:'استراحة النخيل', category:'rest', location:'الرياض - حي الملقا', price:300, commissionType:'fixed', commissionValue:40, desc:'استراحة عائلية بمجلسين ومسبح صيفي وملعب أطفال.'},
+    {id:'d3', name:'ملعب الأبطال', category:'field', location:'الدمام - حي الفيصلية', price:120, commissionType:'percent', commissionValue:15, desc:'ملعب كرة قدم عشب صناعي مع إضاءة ليلية.'},
+    {id:'d4', name:'مخيم البادية', category:'camp', location:'طريق الخرج - بر', price:600, commissionType:'fixed', commissionValue:80, desc:'مخيم شتوي مجهز بالكامل مع خيام وكهرباء وموقف سيارات.'}
+  ];
+}
+
+/* ---------------- render root ---------------- */
+function render(){
+  const app = $('#app');
+  $$('.top-nav button').forEach(b=>b.classList.toggle('active', b.dataset.view===state.view));
+  if(state.view==='home') app.innerHTML = renderHome();
+  else if(state.view==='detail') app.innerHTML = renderDetail();
+  else if(state.view==='admin') app.innerHTML = renderAdmin();
+  bindEvents();
+}
+
+/* ---------------- HOME ---------------- */
+function renderHome(){
+  const filtered = state.activeCat==='all' ? listings : listings.filter(l=>l.category===state.activeCat);
+  const catChips = Object.entries(CATEGORIES).map(([id,c])=>`
+    <button class="cat-chip ${state.activeCat===id?'active':''}" data-cat="${id}">
+      ${icon(id,18)} ${c.name}
+    </button>`).join('');
+
+  const cards = filtered.map(l=>`
+    <div class="card" data-open="${l.id}">
+      <div class="thumb" style="background:${CATEGORIES[l.category].bg}">${icon(l.category,64)}</div>
+      <div class="body">
+        <span class="tag" style="background:${CATEGORIES[l.category].bg};color:${CATEGORIES[l.category].color}">${CATEGORIES[l.category].name}</span>
+        <div class="name">${l.name}</div>
+        <div class="loc">${l.location}</div>
+        <div class="row-bottom">
+          <div class="price">${money(l.price)} <span>/ الليلة</span></div>
+          <button class="btn btn-primary btn-sm">التفاصيل</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="hero">
+      <div>
+        <h1>احجز مكانك القادم بلمسة وحدة</h1>
+        <p>شاليهات، استراحات، ملاعب كرة قدم، ومخيمات — كل الحجوزات في مكان واحد، والدفع آمن عند التأكيد.</p>
+      </div>
+      <div class="hero-badge">📅 حجز فوري + إتاحة محدّثة يوميًا</div>
+    </div>
+    <div class="cats">
+      <button class="cat-chip ${state.activeCat==='all'?'active':''}" data-cat="all">الكل</button>
+      ${catChips}
+    </div>
+    ${filtered.length? `<div class="grid">${cards}</div>` : `<div class="empty">لا توجد نتائج في هذا التصنيف بعد.</div>`}
+  `;
+}
+
+/* ---------------- DETAIL + CALENDAR ---------------- */
+function renderDetail(){
+  const l = listings.find(x=>x.id===state.currentListingId);
+  if(!l) return `<div class="empty">العنصر غير موجود</div>`;
+  if(!state.calMonth){
+    const now = new Date();
+    state.calMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  }
+  return `
+    <a href="#" class="back-link" data-back>→ رجوع للرئيسية</a>
+    <div class="detail-top">
+      <div>
+        <div class="detail-hero" style="background:${CATEGORIES[l.category].bg}">${icon(l.category,110)}</div>
+        <div class="detail-info" style="margin-top:18px">
+          <h2>${l.name}</h2>
+          <div class="loc">📍 ${l.location}</div>
+          <p class="desc">${l.desc||''}</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div style="font-weight:800;font-size:17px;margin-bottom:10px">اختر تاريخ الحجز</div>
+        ${renderCalendar(l)}
+        ${renderBookingSummary(l)}
+      </div>
+    </div>
+  `;
+}
+
+function renderCalendar(l){
+  const month = state.calMonth;
+  const y = month.getFullYear(), m = month.getMonth();
+  const first = new Date(y,m,1);
+  const startOffset = first.getDay(); // 0=Sun
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const monthName = month.toLocaleDateString('ar-SA',{month:'long', year:'numeric'});
+  const dows = ['أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+
+  let cells = '';
+  for(let i=0;i<startOffset;i++) cells += `<div class="cal-day empty-cell"></div>`;
+  for(let d=1; d<=daysInMonth; d++){
+    const dateObj = new Date(y,m,d);
+    const iso = dateObj.toISOString().slice(0,10);
+    const disabled = dateObj < today;
+    let cls = 'cal-day';
+    if(disabled) cls += ' disabled';
+    if(state.selStart===iso || state.selEnd===iso) cls += ' selected';
+    else if(state.selStart && state.selEnd && iso>state.selStart && iso<state.selEnd) cls += ' in-range';
+    cells += `<div class="${cls}" ${disabled?'':`data-day="${iso}"`}>${d}</div>`;
+  }
+
+  return `
+    <div class="cal-head">
+      <button data-prev-month>›</button>
+      <div style="font-weight:800">${monthName}</div>
+      <button data-next-month>‹</button>
+    </div>
+    <div class="cal-grid">
+      ${dows.map(d=>`<div class="dow">${d}</div>`).join('')}
+      ${cells}
+    </div>
+  `;
+}
+
+function renderBookingSummary(l){
+  if(!state.selStart || !state.selEnd){
+    return `<div class="step-note">اختر تاريخ الوصول ثم تاريخ المغادرة من التقويم.</div>`;
+  }
+  const nights = Math.round((new Date(state.selEnd)-new Date(state.selStart))/86400000);
+  if(nights<=0) return `<div class="step-note">اختر تاريخ مغادرة بعد تاريخ الوصول.</div>`;
+  const total = nights * l.price;
+  return `
+    <div style="margin-top:16px">
+      <div class="summary-row"><span>${nights} ليلة × ${money(l.price)}</span><span>${money(total)}</span></div>
+      <div class="summary-row total"><span>الإجمالي</span><span>${money(total)}</span></div>
+    </div>
+    <label>الاسم الكامل</label>
+    <input id="guestName" placeholder="اسمك">
+    <label>رقم الجوال</label>
+    <input id="guestPhone" placeholder="05xxxxxxxx">
+    <button class="btn btn-green btn-block" style="margin-top:16px" data-confirm-booking="${l.id}">تأكيد الحجز والدفع</button>
+    <div class="step-note">💳 هذه بوابة دفع تجريبية للعرض. لتفعيل دفع حقيقي، يُربط الموقع لاحقًا بمزود دفع مرخّص مثل Moyasar أو PayTabs أو HyperPay.</div>
+  `;
+}
+
+/* ---------------- ADMIN ---------------- */
+function renderAdmin(){
+  const totalBookings = bookings.length;
+  const totalRevenue = bookings.reduce((s,b)=>s+b.total,0);
+  const totalCommission = bookings.reduce((s,b)=>s+b.commission,0);
+
+  const tabs = `
+    <div class="admin-tabs">
+      <button class="${state.adminTab==='listings'?'active':''}" data-admin-tab="listings">العناصر</button>
+      <button class="${state.adminTab==='bookings'?'active':''}" data-admin-tab="bookings">الحجوزات والعمولات</button>
+    </div>
+  `;
+
+  const stats = `
+    <div class="stats">
+      <div class="stat-card"><div class="num">${listings.length}</div><div class="lbl">عناصر مضافة</div></div>
+      <div class="stat-card"><div class="num">${totalBookings}</div><div class="lbl">إجمالي الحجوزات</div></div>
+      <div class="stat-card"><div class="num">${money(totalRevenue)}</div><div class="lbl">إجمالي قيمة الحجوزات</div></div>
+      <div class="stat-card"><div class="num">${money(totalCommission)}</div><div class="lbl">عمولتك (صافي)</div></div>
+    </div>
+  `;
+
+  if(state.adminTab==='bookings'){
+    const rows = bookings.slice().reverse().map(b=>{
+      const l = listings.find(x=>x.id===b.listingId);
+      return `<tr>
+        <td>${l?l.name:'—'}</td>
+        <td>${b.guestName}</td>
+        <td>${b.checkIn} → ${b.checkOut}</td>
+        <td>${money(b.total)}</td>
+        <td>${money(b.commission)}</td>
+        <td>${money(b.ownerAmount)}</td>
+      </tr>`;
+    }).join('');
+    return `
+      ${tabs}${stats}
+      <div class="panel">
+        <table>
+          <thead><tr><th>العنصر</th><th>العميل</th><th>التواريخ</th><th>الإجمالي</th><th>عمولتك</th><th>لصاحب العنصر</th></tr></thead>
+          <tbody>${rows || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:24px">لا توجد حجوزات بعد</td></tr>`}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  const rows = listings.map(l=>`
+    <tr>
+      <td>${l.name}</td>
+      <td>${CATEGORIES[l.category].name}</td>
+      <td>${l.location}</td>
+      <td>${money(l.price)}</td>
+      <td>${l.commissionType==='percent' ? l.commissionValue+'%' : money(l.commissionValue)}</td>
+      <td class="row-actions">
+        <button class="btn btn-outline btn-sm" data-edit="${l.id}">تعديل</button>
+        <button class="btn btn-outline btn-sm" data-delete="${l.id}">حذف</button>
+      </td>
+    </tr>
+  `).join('');
+
+  return `
+    ${tabs}${stats}
+    <div class="panel" style="margin-bottom:20px">
+      <div style="font-weight:800;font-size:17px;margin-bottom:14px" id="formTitle">إضافة عنصر جديد</div>
+      <form id="listingForm">
+        <input type="hidden" id="editId">
+        <label>الاسم</label>
+        <input id="f_name" required placeholder="مثال: شاليه الشاطئ">
+        <label>التصنيف</label>
+        <select id="f_category">
+          ${Object.entries(CATEGORIES).map(([id,c])=>`<option value="${id}">${c.name}</option>`).join('')}
+        </select>
+        <label>الموقع</label>
+        <input id="f_location" required placeholder="المدينة - الحي">
+        <label>السعر لليلة الواحدة (ر.س)</label>
+        <input id="f_price" type="number" min="1" required>
+        <label>نوع العمولة</label>
+        <select id="f_commType">
+          <option value="percent">نسبة مئوية من كل حجز</option>
+          <option value="fixed">مبلغ ثابت لكل حجز</option>
+        </select>
+        <label>قيمة العمولة</label>
+        <input id="f_commValue" type="number" min="0" required placeholder="مثال: 10 (للنسبة) أو 50 (للمبلغ)">
+        <label>وصف مختصر</label>
+        <textarea id="f_desc" placeholder="تفاصيل تساعد الزائر على اتخاذ القرار"></textarea>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button type="submit" class="btn btn-primary">حفظ</button>
+          <button type="button" class="btn btn-outline" id="cancelEdit" style="display:none">إلغاء التعديل</button>
+        </div>
+      </form>
+    </div>
+    <div class="panel">
+      <table>
+        <thead><tr><th>الاسم</th><th>التصنيف</th><th>الموقع</th><th>السعر/ليلة</th><th>العمولة</th><th></th></tr></thead>
+        <tbody>${rows || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:24px">لا توجد عناصر بعد</td></tr>`}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ---------------- events ---------------- */
+function bindEvents(){
+  $$('.top-nav button').forEach(b=>b.onclick = ()=>{
+    if(b.dataset.view==='admin' && !adminUnlocked){
+      const pass = prompt('أدخل كلمة مرور لوحة التحكم:');
+      if(pass !== ADMIN_PASSWORD){ if(pass!==null) toast('كلمة المرور غير صحيحة'); return; }
+      adminUnlocked = true;
+    }
+    state.view=b.dataset.view; state.adminTab='listings'; render();
+  });
+
+  // home
+  $$('.cat-chip[data-cat]').forEach(b=>b.onclick=()=>{ state.activeCat=b.dataset.cat; render(); });
+  $$('.card[data-open]').forEach(c=>c.onclick=()=>{
+    state.currentListingId=c.dataset.open; state.view='detail';
+    state.selStart=null; state.selEnd=null; state.calMonth=null;
+    render();
+  });
+
+  // detail
+  const backLink = $('[data-back]');
+  if(backLink) backLink.onclick=(e)=>{e.preventDefault(); state.view='home'; render();};
+  const prevBtn = $('[data-prev-month]');
+  if(prevBtn) prevBtn.onclick=()=>{ state.calMonth.setMonth(state.calMonth.getMonth()-1); render(); };
+  const nextBtn = $('[data-next-month]');
+  if(nextBtn) nextBtn.onclick=()=>{ state.calMonth.setMonth(state.calMonth.getMonth()+1); render(); };
+  $$('[data-day]').forEach(d=>d.onclick=()=>{
+    const iso = d.dataset.day;
+    if(!state.selStart || (state.selStart && state.selEnd)){
+      state.selStart = iso; state.selEnd = null;
+    } else {
+      if(iso <= state.selStart){ state.selStart = iso; }
+      else { state.selEnd = iso; }
+    }
+    render();
+  });
+  const confirmBtn = $('[data-confirm-booking]');
+  if(confirmBtn) confirmBtn.onclick = async ()=>{
+    const l = listings.find(x=>x.id===confirmBtn.dataset.confirmBooking);
+    const name = $('#guestName').value.trim();
+    const phone = $('#guestPhone').value.trim();
+    if(!name || !phone){ toast('الرجاء تعبئة الاسم ورقم الجوال'); return; }
+    const nights = Math.round((new Date(state.selEnd)-new Date(state.selStart))/86400000);
+    const total = nights * l.price;
+    const commission = l.commissionType==='percent' ? total*l.commissionValue/100 : l.commissionValue;
+    const booking = {
+      id: 'b'+Date.now(), listingId:l.id, guestName:name, guestPhone:phone,
+      checkIn:state.selStart, checkOut:state.selEnd, nights, total,
+      commission: Math.round(commission*100)/100,
+      ownerAmount: Math.round((total-commission)*100)/100
+    };
+    try{
+      await sbInsert('bookings', toDbBooking(booking));
+      bookings.unshift(booking);
+      toast('تم تأكيد الحجز بنجاح ✅');
+      state.selStart=null; state.selEnd=null;
+      state.view='home';
+      render();
+    }catch(e){ toast('تعذر حفظ الحجز، حاول مرة أخرى'); }
+  };
+
+  // admin
+  $$('[data-admin-tab]').forEach(b=>b.onclick=()=>{ state.adminTab=b.dataset.adminTab; render(); });
+  const form = $('#listingForm');
+  if(form) form.onsubmit = async (e)=>{
+    e.preventDefault();
+    const editId = $('#editId').value;
+    const data = {
+      name: $('#f_name').value.trim(),
+      category: $('#f_category').value,
+      location: $('#f_location').value.trim(),
+      price: parseFloat($('#f_price').value),
+      commissionType: $('#f_commType').value,
+      commissionValue: parseFloat($('#f_commValue').value),
+      desc: $('#f_desc').value.trim()
+    };
+    try{
+      if(editId){
+        await sbUpdate('listings', editId, toDbListing({id:editId, ...data}));
+        const idx = listings.findIndex(l=>l.id===editId);
+        listings[idx] = {...listings[idx], ...data};
+        toast('تم تحديث العنصر');
+      } else {
+        const newListing = {id:'l'+Date.now(), ...data};
+        await sbInsert('listings', toDbListing(newListing));
+        listings.push(newListing);
+        toast('تمت إضافة العنصر');
+      }
+      state.adminTab='listings';
+      render();
+    }catch(e){ toast('تعذر الحفظ، تحقق من الاتصال'); }
+  };
+  $$('[data-edit]').forEach(b=>b.onclick=()=>{
+    const l = listings.find(x=>x.id===b.dataset.edit);
+    $('#editId').value = l.id;
+    $('#f_name').value = l.name;
+    $('#f_category').value = l.category;
+    $('#f_location').value = l.location;
+    $('#f_price').value = l.price;
+    $('#f_commType').value = l.commissionType;
+    $('#f_commValue').value = l.commissionValue;
+    $('#f_desc').value = l.desc||'';
+    $('#formTitle').textContent = 'تعديل: ' + l.name;
+    $('#cancelEdit').style.display='inline-block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+  const cancelBtn = $('#cancelEdit');
+  if(cancelBtn) cancelBtn.onclick = ()=>{ render(); };
+  $$('[data-delete]').forEach(b=>b.onclick = async ()=>{
+    if(!confirm('تأكيد حذف هذا العنصر؟')) return;
+    try{
+      await sbDelete('listings', b.dataset.delete);
+      listings = listings.filter(l=>l.id!==b.dataset.delete);
+      toast('تم الحذف');
+      render();
+    }catch(e){ toast('تعذر الحذف، حاول مرة أخرى'); }
+  });
+}
+
+/* ---------------- init ---------------- */
+(async function init(){
+  await loadData();
+  render();
+})();
+</script>
+</body>
+</html>
